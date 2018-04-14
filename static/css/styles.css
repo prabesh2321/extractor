@@ -1,0 +1,12 @@
+.form{
+    display: block;text-align: center;border-bottom: 1px solid #ccc;margin: 5px 0 10px 0;padding: 5px 0 10px 0;
+}
+.input{
+    width: 50%;padding: 6px 10px;
+}
+.inputBox{
+    padding: 6px 10px;
+}
+.search{
+    background-color: blue;border: none;color: #fff;padding: 7px 10px;
+}

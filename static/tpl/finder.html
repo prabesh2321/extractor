@@ -1,0 +1,29 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="/static/css/styles.css">
+  <title>Excel Column Finder</title>
+</head>
+<body>
+  <div><a href="/">Extractor</a></div>
+<form id="finderForm" class="form" enctype="application/x-www-form-urlencoded">
+<div>
+  <span>Start Column:</span>
+  <input type="text" name="start" value="" id="start" class="inputBox">
+  <span>Number of rows:</span>
+  <input type="text" name="row" value="" id="row" class="inputBox">
+  <span>Number of columns:</span>
+  <input type="text" name="column" value="" class="inputBox" id="column">
+  <input type="submit" id="submit" name="submit" value="Submit" class="search">
+</div>
+</form> 
+
+<div id="result">
+
+</div>
+ 
+</body>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.js"></script>
+<script type="text/javascript" src="/static/js/script.js"></script>
+</html>
