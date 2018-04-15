@@ -1,8 +1,7 @@
 package main
 
 import (
-	"bytes"
-	"io"
+	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -78,22 +77,56 @@ func TestMapper(t *testing.T) {
 		})
 	}
 }
+func TestFinder(t *testing.T) {
 
-func TestExtrator(t *testing.T) {
+	req, err := http.NewRequest("GET", "localhost:8087/finder", nil)
+	if err != nil {
+		t.Fatalf("could not create request: %v", err)
+	}
+	rec := httptest.NewRecorder()
+	finder(rec, req)
+	res := rec.Result()
+	defer res.Body.Close()
 
-	tests := []struct {
-		name string
-		body io.Reader
-		out  chan string
-	}{
-		{name: "simple test", body: bytes.NewReader([]byte("its me prabesh")), out: make(chan string)},
-		{name: "with embedded script and style", body: bytes.NewReader([]byte(`<!doctype html><html lang="en"> <body><div id="result"></div><script type="text/javascript">console.log("hello")</script> </body></html>`)), out: make(chan string)},
+	if res.StatusCode != http.StatusOK {
+		t.Errorf("expected status OK; got %v", res.Status)
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			extrator(tt.body, tt.out)
-		})
+	data := url.Values{}
+	data.Set("start", "A")
+	data.Set("row", "1")
+	data.Set("column", "2")
+	req, err = http.NewRequest("PUT", "localhost:8087/finder", strings.NewReader(data.Encode()))
+	if err != nil {
+		t.Fatalf("could not create request: %v", err)
 	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	rec = httptest.NewRecorder()
+	finder(rec, req)
+	res = rec.Result()
+	defer res.Body.Close()
+
+	if res.StatusCode != http.StatusNotFound {
+		t.Errorf("expected status 404; got %v", res.Status)
+	}
+
+	//post request
+	req, err = http.NewRequest("POST", "localhost:8087/finder", strings.NewReader(data.Encode()))
+	if err != nil {
+		t.Fatalf("could not create request: %v", err)
+	}
+	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
+	rec = httptest.NewRecorder()
+	finder(rec, req)
+	res = rec.Result()
+	defer res.Body.Close()
+	_, err = ioutil.ReadAll(res.Body) //<--- here!
+	if err != nil {
+		t.Fatalf("failed to read response body: %v", err)
+	}
+	if res.StatusCode != http.StatusOK {
+		t.Errorf("expected status OK; got %v", res.Status)
+	}
+
 }
 
 func TestValidateInt(t *testing.T) {
@@ -130,6 +163,24 @@ func TestValidateColumn(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := validateColumn(tt.val); got != tt.want {
 				t.Errorf("validateColumn() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func TestIncrement26(t *testing.T) {
+	tests := []struct {
+		name string
+		s    string
+		want string
+	}{
+		{name: "Excel column", s: "AA", want: "AB"},
+		{name: "Excel column", s: "ZZ", want: "AAA"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := increment26(tt.s); got != tt.want {
+				t.Errorf("increment26() = %v, want %v", got, tt.want)
 			}
 		})
 	}

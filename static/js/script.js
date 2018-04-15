@@ -35,7 +35,9 @@
             'start' : start,
             'row' : row,
             'column' : column
-        }).done(function(data){ 
+        }).done(function(res){ 
+            var data = $.parseJSON(res);
+            console.log(data)
             var html="<table style=\"width:100%; border: 1px solid black;\">";
             var k=0;
             for (var i = 1; i <= column; i++) {

@@ -192,7 +192,7 @@ func finder(w http.ResponseWriter, r *http.Request) {
 		data := make([]string, 0, row*column+1)
 		data = append(data, r.FormValue("start"))
 		initial := r.FormValue("start")
-		for i := 0; i < row*column; i++ {
+		for i := 1; i < row*column; i++ {
 			res := increment26(initial)
 			data = append(data, res)
 			initial = res
